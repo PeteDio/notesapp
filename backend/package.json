@@ -11,12 +11,14 @@
     "start-wait-debuger": "nodemon src/index.js --inspect-brk=0.0.0.0:9229",
     "test": "cross-env NODE_ENV=test PORT=8081 mocha --timeout 10000 --exit --inspect=0.0.0.0:9230",
     "test-watch": "nodemon --exec \"npm test\"",
+    "migrate": "npx sequelize-cli db:migrate",
     "test-wait-debuger": "cross-env NODE_ENV=test PORT=8081 mocha --no-timeouts --exit --inspect-brk=0.0.0.0:9230"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.17.1",
+    "fs": "^0.0.1-security",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.3",
     "sequelize": "^6.37.3"

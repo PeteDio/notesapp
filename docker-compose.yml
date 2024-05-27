@@ -5,12 +5,12 @@ services:
       - NODE_ENV=development
       context: backend
       target: development
-    command: npm run start-watch
+    command: sh -c "npm run migrate && npm run start-watch"
     environment:
-      - DATABASE_DB=mysqk
+      - DATABASE_DB=notesdb
       - DATABASE_USER=root
       - DATABASE_PASSWORD=/run/secrets/db-password
-      - DATABASE_HOST=localhost
+      - DATABASE_HOST=db
       - NODE_ENV=development
     ports:
       - 8080:8080
@@ -35,12 +35,12 @@ services:
     secrets:
       - db-password
     volumes:
-      - db-data:/var/lib/mysql
+      - db-data:/var/lib/notesdb
     networks:
       - private
     environment:
-      - MYSQL_DATABASE=example
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
+      - MYSQL_DATABASE=notesdb
   frontend:
     build:
       context: frontend

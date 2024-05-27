@@ -25,6 +25,14 @@ COPY . /code
 # using node here is still more graceful stopping then npm with --init afaik
 # I still can't come up with a good production way to run with npm and graceful shutdown
 CMD [ "node", "src/index.js" ]
+# Separate stage for running migrations
+FROM development as migrations
+
+# Install Sequelize CLI globally
+RUN npm install -g sequelize-cli
+
+# Run migrations
+CMD ["npx sequelize-cli", "db:migrate"]
 
 FROM development as dev-envs
 RUN <<EOF
@@ -39,3 +47,4 @@ usermod -aG docker vscode
 EOF
 # install Docker tools (cli, buildx, compose)
 COPY --from=gloursdocker/docker / /
+
