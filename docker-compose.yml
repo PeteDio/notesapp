@@ -1,0 +1,36 @@
+services:
+  notes-postgres:
+    image: postgres:latest
+    restart: always
+    networks: 
+      - notes
+    volumes:
+      - ./var:/var/lib/postgres
+    environment:
+      POSTGRES_ROOT_PASSWORD: root
+      POSTGRES_USER: notes
+      POSTGRES_PASSWORD: notes
+      POSTGRES_DATABASE: notes
+  notes-node:
+    image: node:latest
+    user: node
+    working_dir: /home/node/app
+    networks:
+      - notes
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./:/home/node/app
+    ports:
+      - "8080:8080"
+    command: >
+      sh -c "rm -rf node_modules &&
+             npm install &&
+             npm run watch"
+    restart: always
+    stdin_open: true
+    tty: true
+    depends_on:
+      - notes-postgres
+networks:
+  notes:
