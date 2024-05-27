@@ -1,36 +1,66 @@
 services:
-  notes-postgres:
-    image: postgres:latest
-    restart: always
-    networks: 
-      - notes
-    volumes:
-      - ./var:/var/lib/postgres
-    environment:
-      POSTGRES_ROOT_PASSWORD: root
-      POSTGRES_USER: notes
-      POSTGRES_PASSWORD: notes
-      POSTGRES_DATABASE: notes
-  notes-node:
-    image: node:latest
-    user: node
-    working_dir: /home/node/app
-    networks:
-      - notes
-    environment:
+  backend:
+    build:
+      args:
       - NODE_ENV=development
-    volumes:
-      - ./:/home/node/app
+      context: backend
+      target: development
+    command: npm run start-watch
+    environment:
+      - DATABASE_DB=example
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=/run/secrets/db-password
+      - DATABASE_HOST=db
+      - NODE_ENV=development
     ports:
-      - "8080:8080"
-    command: >
-      sh -c "rm -rf node_modules &&
-             npm install &&
-             npm run watch"
-    restart: always
-    stdin_open: true
-    tty: true
+      - 8080:8080
+      - 9229:9229
+      - 9230:9230
+    secrets:
+      - db-password
+    volumes:
+      - ./backend/src:/code/src:ro
+      - ./backend/package.json:/code/package.json
+      - ./backend/package-lock.json:/code/package-lock.json
+      - back-notused:/opt/app/node_modules
+    networks:
+      - public
+      - private
     depends_on:
-      - notes-postgres
+      - db
+  db:
+    # If you really want to use MySQL, uncomment the following line
+    image: mysql:8.0.27
+    command: '--default-authentication-plugin=mysql_native_password'
+    restart: always
+    secrets:
+      - db-password
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - private
+    environment:
+      - MYSQL_DATABASE=example
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
+  frontend:
+    build:
+      context: frontend
+      target: development
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend/src:/code/src
+      - /code/node_modules
+    networks:
+      - public
+    depends_on:
+      - backend
 networks:
-  notes:
+  public:
+  private:
+volumes:
+  back-notused:
+  db-data:
+secrets:
+  db-password:
+    file: db/password.txt
