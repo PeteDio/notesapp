@@ -14,7 +14,7 @@ COPY . /code
 CMD [ "npm", "start" ]
 
 FROM development AS builder
-
+RUN npm install -g vite
 RUN npm run build
 
 FROM development as dev-envs
