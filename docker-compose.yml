@@ -21,6 +21,7 @@ services:
     build:
       context: frontend
       target: development
+    command: sh -c "npm run dev"
     ports:
       - 3000:3000
     volumes:
