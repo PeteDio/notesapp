@@ -1,33 +1,16 @@
-const fs = require("fs");
+const fs = require('fs');
 
-const readFileSync = (filename) => fs.readFileSync(filename).toString("utf8");
+// Read the database password from the secret file
+const dbPasswordFilePath = '/run/secrets/db-password'; // Path to the secret file
+const dbPassword = fs.readFileSync(dbPasswordFilePath, 'utf8').trim();
+
+// Construct the database URL
+const url = `postgres://postgres:${dbPassword}@db:5432/${process.env.DEV_DATABASE_DB}`;
 
 module.exports = {
   development: {
-    username: process.env.DATABASE_USER,
-    password: process.env.DATABASE_PASSWORD
-      ? readFileSync(process.env.DATABASE_PASSWORD)
-      : null,
-    database: process.env.DATABASE_DB,
+    url: url,
     host: process.env.DATABASE_HOST,
-    dialect: "mysql",
-  },
-  test: {
-    username: process.env.DATABASE_USER,
-    password: process.env.DATABASE_PASSWORD
-      ? readFileSync(process.env.DATABASE_PASSWORD)
-      : null,
-    database: process.env.DATABASE_DB,
-    host: process.env.DATABASE_HOST,
-    dialect: "mysql",
-  },
-  production: {
-    username: process.env.DATABASE_USER,
-    password: process.env.DATABASE_PASSWORD
-      ? readFileSync(process.env.DATABASE_PASSWORD)
-      : null,
-    database: process.env.DATABASE_DB,
-    host: process.env.DATABASE_HOST,
-    dialect: "mysql",
+    dialect: 'postgres',
   },
 };

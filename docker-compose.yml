@@ -1,4 +1,35 @@
 services:
+  db:
+    image: postgres
+    restart: always
+    user: postgres
+    secrets:
+      - db-password
+    environment:
+      - POSTGRES_DB=notesdb
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+    expose:
+      - 5432
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - private
+  frontend:
+    build:
+      context: frontend
+      target: development
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend/src:/code/src
+      - /code/node_modules
+    networks:
+      - public
+    depends_on:
+      - backend
   backend:
     build:
       args:
@@ -7,9 +38,8 @@ services:
       target: development
     command: sh -c "npm run migrate && npm run start-watch"
     environment:
-      - DATABASE_DB=notesdb
-      - DATABASE_USER=root
-      - DATABASE_PASSWORD=/run/secrets/db-password
+      - DEV_DATABASE_URL=postgres://postgres:password@db:5432/notesdb
+      - DEV_DATABASE_DB=notesdb
       - DATABASE_HOST=db
       - NODE_ENV=development
     ports:
@@ -28,33 +58,6 @@ services:
       - private
     depends_on:
       - db
-  db:
-    platform: linux/arm64/v8
-    image: mysql:8.0.27
-    command: '--default-authentication-plugin=mysql_native_password'
-    restart: always
-    secrets:
-      - db-password
-    volumes:
-      - db-data:/var/lib/notesdb
-    networks:
-      - private
-    environment:
-      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
-      - MYSQL_DATABASE=notesdb
-  frontend:
-    build:
-      context: frontend
-      target: development
-    ports:
-      - 3000:3000
-    volumes:
-      - ./frontend/src:/code/src
-      - /code/node_modules
-    networks:
-      - public
-    depends_on:
-      - backend
 networks:
   public:
   private:
