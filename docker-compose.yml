@@ -30,7 +30,7 @@ services:
       - db
   db:
     platform: linux/arm64/v8
-    image: mysql:latest
+    image: mysql:8.0.27
     command: '--default-authentication-plugin=mysql_native_password'
     restart: always
     secrets:
