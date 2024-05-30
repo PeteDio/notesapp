@@ -7,15 +7,22 @@ ENV PORT=3000
 
 WORKDIR /code
 COPY package.json /code/package.json
+
 COPY package-lock.json /code/package-lock.json
+
 RUN npm ci
+
 COPY . /code
 
-CMD [ "npm", "start" ]
+RUN npm run build
+
+CMD [ "npm", "run", "preview" ]
 
 FROM development AS builder
 
 RUN npm run build
+
+CMD [ "npm", "run", "preview" ]
 
 FROM development as dev-envs
 RUN <<EOF
@@ -30,7 +37,7 @@ usermod -aG docker vscode
 EOF
 # install Docker tools (cli, buildx, compose)
 COPY --from=gloursdocker/docker / /
-CMD [ "npm", "start" ]
+CMD [ "npm", "run preview" ]
 
 FROM nginx:1.13-alpine
 
