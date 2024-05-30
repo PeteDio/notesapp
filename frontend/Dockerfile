@@ -12,7 +12,7 @@ COPY vite.config.js /code/vite.config.js
 RUN npm ci
 COPY . /code
 
-CMD [ "npm", "start" ]
+CMD [ "npm", "run preview" ]
 
 FROM development AS builder
 RUN npm run build
