@@ -10,6 +10,7 @@ COPY package.json /code/package.json
 COPY package-lock.json /code/package-lock.json
 COPY vite.config.js /code/vite.config.js
 RUN npm ci
+RUN npm i vite -g
 COPY . /code
 
 CMD [ "npm", "run preview" ]
