@@ -16,6 +16,7 @@ COPY . /code
 CMD [ "npm", "run preview" ]
 
 FROM development AS builder
+RUN npm i vite -g
 RUN npm run build
 
 FROM development as dev-envs
