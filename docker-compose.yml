@@ -21,7 +21,7 @@ services:
     build:
       context: frontend
       target: development
-    command: sh -c "npm install -g vite && npm run dev"
+    command: sh -c "npm run preview"
     ports:
       - 3000:3000
     volumes:
