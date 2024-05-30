@@ -7,17 +7,22 @@ ENV PORT=3000
 
 WORKDIR /code
 COPY package.json /code/package.json
+
 COPY package-lock.json /code/package-lock.json
-COPY vite.config.js /code/vite.config.js
-RUN npm ci
-RUN npm i vite -g
+
+RUN npm ci && npm i vite -g
+
 COPY . /code
 
-CMD [ "npm", "run preview" ]
+RUN npm run build
+
+CMD [ "npm", "run", "preview" ]
 
 FROM development AS builder
-RUN npm i vite -g
+
 RUN npm run build
+
+CMD [ "npm", "run", "preview" ]
 
 FROM development as dev-envs
 RUN <<EOF
