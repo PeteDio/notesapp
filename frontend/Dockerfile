@@ -30,7 +30,7 @@ usermod -aG docker vscode
 EOF
 # install Docker tools (cli, buildx, compose)
 COPY --from=gloursdocker/docker / /
-CMD [ "npm", "start" ]
+CMD [ "npm", "run preview" ]
 
 FROM nginx:1.13-alpine
 
