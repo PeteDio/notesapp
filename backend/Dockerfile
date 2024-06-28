@@ -1,42 +1,29 @@
 # syntax=docker/dockerfile:1.4
 
-# if you're doing anything beyond your local machine, please pin this to a specific version at https://hub.docker.com/_/node/
-FROM node:lts AS development
+# Use a specific Node.js LTS version for consistency
+FROM node:18-lts AS development
 
-# set our node environment, either development or production
-# defaults to production, compose overrides this to development on build and run
+# Set working directory
+WORKDIR /code
+
+# Define Node environment
 ARG NODE_ENV=production
 ENV NODE_ENV $NODE_ENV
 
-WORKDIR /code
-
-# default to port 80 for node, and 9229 and 9230 (tests) for debug
-ARG PORT=8080
-ENV PORT $PORT
-
+# Install dependencies
 COPY package.json /code/package.json
 COPY package-lock.json /code/package-lock.json
 RUN npm ci
-# copy in our source code last, as it changes the most
+
+# Install Mongoose
+RUN npm install mongoose
+
+# Copy source code
 COPY . /code
 
-# if you want to use npm start instead, then use `docker run --init in production`
-# so that signals are passed properly. Note the code in index.js is needed to catch Docker signals
-# using node here is still more graceful stopping then npm with --init afaik
-# I still can't come up with a good production way to run with npm and graceful shutdown
+# Start the application with Nodemon
 CMD [ "nodemon", "index.js" ]
-# Separate stage for running migrations
-FROM development as migrations
 
-# Install Sequelize CLI globally
-RUN npm install -g sequelize-cli
-
-# Copy the Sequelize configuration file and migration files
-COPY ./config/config.js /app/config/
-COPY ./migrations /app/migrations
-
-# Run migrations
-CMD ["npx sequelize-cli", "db:migrate"]
 
 FROM development as dev-envs
 RUN <<EOF
