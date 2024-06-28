@@ -1,6 +1,7 @@
-const express = require("express");
-const router = express.Router();
-const notesCtrl = require('../controller/notes')
+// import routes
+const Test = require("./testRoutes")
+const User = require("./userRoutes")
 
-router.get("/", notesCtrl.test);
-module.exports = router;
+
+
+module.exports = {Test, User};

@@ -1,27 +1,9 @@
 services:
-  db:
-    image: postgres
-    restart: always
-    user: postgres
-    secrets:
-      - db-password
-    environment:
-      - POSTGRES_DB=notesdb
-      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
-    expose:
-      - 5432
-    healthcheck:
-      test: [ "CMD", "pg_isready" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - private
   frontend:
     build:
       context: frontend
       target: development
-    command: sh -c "npm run preview"
+    command: sh -c "npm run dev"
     ports:
       - 3000:3000
     volumes:
@@ -37,18 +19,14 @@ services:
       - NODE_ENV=development
       context: backend
       target: development
-    command: sh -c "npm run migrate && npm run start-watch"
+    command: sh -c "npm run dev"
     environment:
-      - DEV_DATABASE_URL=postgres://postgres:password@db:5432/notesdb
-      - DEV_DATABASE_DB=notesdb
-      - DATABASE_HOST=db
+      - DEV_DATABASE_URL=${MONGO_URI}
       - NODE_ENV=development
     ports:
       - 8080:8080
       - 9229:9229
       - 9230:9230
-    secrets:
-      - db-password
     volumes:
       - ./backend/src:/code/src:ro
       - ./backend/package.json:/code/package.json
@@ -57,14 +35,8 @@ services:
     networks:
       - public
       - private
-    depends_on:
-      - db
 networks:
   public:
   private:
 volumes:
   back-notused:
-  db-data:
-secrets:
-  db-password:
-    file: db/password.txt
