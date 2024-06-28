@@ -1,6 +1,7 @@
-const express = require("express");
-const router = express.Router();
-const testCtrl = require('../controller/test')
+// import routes
+const Test = require("./testRoutes")
+const User = require("./userRoutes")
 
-router.get("/test", testCtrl.test);
-module.exports = router;
+
+
+module.exports = {Test, User};

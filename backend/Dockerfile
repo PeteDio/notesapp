@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.4
 
 # Use a specific Node.js LTS version for consistency
-FROM node:18-lts AS development
+FROM node:lts AS development
 
 # Set working directory
 WORKDIR /code

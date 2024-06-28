@@ -14,5 +14,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
 
-app.use('/v1', router)
+// Register our RESTful routers with our "app"
+app.use(`/v1/test`, router.Test);
+app.use(`/v1/user`, router.User);
+
 module.exports = app;
