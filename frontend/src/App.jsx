@@ -11,7 +11,7 @@ function App() {
 
   // Fetches all users on component mount
   useEffect(() => {
-    fetch("http://192.168.0.27:8080/v1/user")
+    fetch("http://192.168.0.27:8000/v1/user")
       .then(response => response.json())
       .then(data => setUsers(data.allUsers))  // Update state with fetched users
       .catch(error => console.error(error)); // Handle errors during data fetching

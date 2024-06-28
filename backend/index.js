@@ -1,6 +1,6 @@
 const app = require("./server");
 
-const port = process.env.BE_PORT || 8080;
+const port = process.env.BE_PORT || 8000;
 
 const server = app.listen(port, function() {
     console.log("Webserver is ready on port " + port);
